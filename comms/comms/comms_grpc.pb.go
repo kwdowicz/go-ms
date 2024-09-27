@@ -19,14 +19,14 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	PersonService_GreetPerson_FullMethodName = "/commns.PersonService/GreetPerson"
+	PersonService_Post_FullMethodName = "/commns.PersonService/Post"
 )
 
 // PersonServiceClient is the client API for PersonService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type PersonServiceClient interface {
-	GreetPerson(ctx context.Context, in *Person, opts ...grpc.CallOption) (*Greeting, error)
+	Post(ctx context.Context, in *Msg, opts ...grpc.CallOption) (*Ack, error)
 }
 
 type personServiceClient struct {
@@ -37,10 +37,10 @@ func NewPersonServiceClient(cc grpc.ClientConnInterface) PersonServiceClient {
 	return &personServiceClient{cc}
 }
 
-func (c *personServiceClient) GreetPerson(ctx context.Context, in *Person, opts ...grpc.CallOption) (*Greeting, error) {
+func (c *personServiceClient) Post(ctx context.Context, in *Msg, opts ...grpc.CallOption) (*Ack, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(Greeting)
-	err := c.cc.Invoke(ctx, PersonService_GreetPerson_FullMethodName, in, out, cOpts...)
+	out := new(Ack)
+	err := c.cc.Invoke(ctx, PersonService_Post_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -51,7 +51,7 @@ func (c *personServiceClient) GreetPerson(ctx context.Context, in *Person, opts 
 // All implementations must embed UnimplementedPersonServiceServer
 // for forward compatibility.
 type PersonServiceServer interface {
-	GreetPerson(context.Context, *Person) (*Greeting, error)
+	Post(context.Context, *Msg) (*Ack, error)
 	mustEmbedUnimplementedPersonServiceServer()
 }
 
@@ -62,8 +62,8 @@ type PersonServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedPersonServiceServer struct{}
 
-func (UnimplementedPersonServiceServer) GreetPerson(context.Context, *Person) (*Greeting, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GreetPerson not implemented")
+func (UnimplementedPersonServiceServer) Post(context.Context, *Msg) (*Ack, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Post not implemented")
 }
 func (UnimplementedPersonServiceServer) mustEmbedUnimplementedPersonServiceServer() {}
 func (UnimplementedPersonServiceServer) testEmbeddedByValue()                       {}
@@ -86,20 +86,20 @@ func RegisterPersonServiceServer(s grpc.ServiceRegistrar, srv PersonServiceServe
 	s.RegisterService(&PersonService_ServiceDesc, srv)
 }
 
-func _PersonService_GreetPerson_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Person)
+func _PersonService_Post_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Msg)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(PersonServiceServer).GreetPerson(ctx, in)
+		return srv.(PersonServiceServer).Post(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: PersonService_GreetPerson_FullMethodName,
+		FullMethod: PersonService_Post_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PersonServiceServer).GreetPerson(ctx, req.(*Person))
+		return srv.(PersonServiceServer).Post(ctx, req.(*Msg))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -112,8 +112,8 @@ var PersonService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*PersonServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "GreetPerson",
-			Handler:    _PersonService_GreetPerson_Handler,
+			MethodName: "Post",
+			Handler:    _PersonService_Post_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

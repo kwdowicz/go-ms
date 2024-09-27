@@ -4,6 +4,11 @@ PROTO_FILES := $(PROTO_DIR)/*.proto
 GO_OUT_DIR := $(PROTO_DIR)
 GO_FILES := $(wildcard $(GO_OUT_DIR)/*.pb.go)
 
+export PATH := $(shell echo $$PATH:$(shell go env GOPATH)/bin)
+
+all:
+	@echo $(PATH)
+
 # Protobuf compilation
 .PHONY: proto
 proto: $(PROTO_FILES)

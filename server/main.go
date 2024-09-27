@@ -15,11 +15,10 @@ type Server struct {
     commspb.UnimplementedPersonServiceServer
 }
 
-// GreetPerson implements the GreetPerson RPC method
-func (s *Server) GreetPerson(ctx context.Context, person *commspb.Person) (*commspb.Greeting, error) {
-    // Create a greeting message
-    message := fmt.Sprintf("Hello, %s! You are %d years old.", person.Name, person.Age)
-    return &commspb.Greeting{Message: message}, nil
+func (s *Server) Post(ctx context.Context, msg *commspb.Msg) (*commspb.Ack, error) {
+    log.Printf("Client sent: %v", msg.Content)
+    message := fmt.Sprintf("Server recieved this from you: %v", msg.Content)
+    return &commspb.Ack{Message: message}, nil
 }
 
 func main() {

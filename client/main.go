@@ -23,20 +23,19 @@ func main() {
     client := commspb.NewPersonServiceClient(conn)
 
     // Create a new Person request
-    person := &commspb.Person{
-        Name: "Alice",
-        Age:  30,
+    person := &commspb.Msg{
+		Content: "This is a content of the message.",
     }
 
     // Call the GreetPerson method
     ctx, cancel := context.WithTimeout(context.Background(), time.Second)
     defer cancel()
 
-    res, err := client.GreetPerson(ctx, person)
+    res, err := client.Post(ctx, person)
     if err != nil {
-        log.Fatalf("Error calling GreetPerson: %v", err)
+        log.Fatalf("Error calling Post: %v", err)
     }
 
     // Print the response
-    log.Printf("Greeting: %s", res.Message)
+    log.Printf("%s\n", res.Message)
 }
