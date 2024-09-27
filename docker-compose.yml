@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  server:
+    build:
+      context: .
+      target: server
+    container_name: grpc_server
+    ports:
+      - "50051:50051"
+  
+  client:
+    build:
+      context: .
+      target: client
+    container_name: grpc_client
+    depends_on:
+      - server
