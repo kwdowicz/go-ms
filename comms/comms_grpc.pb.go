@@ -2,9 +2,9 @@
 // versions:
 // - protoc-gen-go-grpc v1.5.1
 // - protoc             v3.12.4
-// source: comms/comms.proto
+// source: comms.proto
 
-package comms
+package __
 
 import (
 	context "context"
@@ -19,103 +19,141 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	PersonService_Post_FullMethodName = "/commns.PersonService/Post"
+	MsgService_Post_FullMethodName = "/commns.MsgService/Post"
+	MsgService_Sub_FullMethodName  = "/commns.MsgService/Sub"
 )
 
-// PersonServiceClient is the client API for PersonService service.
+// MsgServiceClient is the client API for MsgService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type PersonServiceClient interface {
+type MsgServiceClient interface {
 	Post(ctx context.Context, in *Msg, opts ...grpc.CallOption) (*Ack, error)
+	Sub(ctx context.Context, in *Tag, opts ...grpc.CallOption) (*Ack, error)
 }
 
-type personServiceClient struct {
+type msgServiceClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewPersonServiceClient(cc grpc.ClientConnInterface) PersonServiceClient {
-	return &personServiceClient{cc}
+func NewMsgServiceClient(cc grpc.ClientConnInterface) MsgServiceClient {
+	return &msgServiceClient{cc}
 }
 
-func (c *personServiceClient) Post(ctx context.Context, in *Msg, opts ...grpc.CallOption) (*Ack, error) {
+func (c *msgServiceClient) Post(ctx context.Context, in *Msg, opts ...grpc.CallOption) (*Ack, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(Ack)
-	err := c.cc.Invoke(ctx, PersonService_Post_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, MsgService_Post_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// PersonServiceServer is the server API for PersonService service.
-// All implementations must embed UnimplementedPersonServiceServer
-// for forward compatibility.
-type PersonServiceServer interface {
-	Post(context.Context, *Msg) (*Ack, error)
-	mustEmbedUnimplementedPersonServiceServer()
+func (c *msgServiceClient) Sub(ctx context.Context, in *Tag, opts ...grpc.CallOption) (*Ack, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Ack)
+	err := c.cc.Invoke(ctx, MsgService_Sub_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
-// UnimplementedPersonServiceServer must be embedded to have
+// MsgServiceServer is the server API for MsgService service.
+// All implementations must embed UnimplementedMsgServiceServer
+// for forward compatibility.
+type MsgServiceServer interface {
+	Post(context.Context, *Msg) (*Ack, error)
+	Sub(context.Context, *Tag) (*Ack, error)
+	mustEmbedUnimplementedMsgServiceServer()
+}
+
+// UnimplementedMsgServiceServer must be embedded to have
 // forward compatible implementations.
 //
 // NOTE: this should be embedded by value instead of pointer to avoid a nil
 // pointer dereference when methods are called.
-type UnimplementedPersonServiceServer struct{}
+type UnimplementedMsgServiceServer struct{}
 
-func (UnimplementedPersonServiceServer) Post(context.Context, *Msg) (*Ack, error) {
+func (UnimplementedMsgServiceServer) Post(context.Context, *Msg) (*Ack, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Post not implemented")
 }
-func (UnimplementedPersonServiceServer) mustEmbedUnimplementedPersonServiceServer() {}
-func (UnimplementedPersonServiceServer) testEmbeddedByValue()                       {}
+func (UnimplementedMsgServiceServer) Sub(context.Context, *Tag) (*Ack, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Sub not implemented")
+}
+func (UnimplementedMsgServiceServer) mustEmbedUnimplementedMsgServiceServer() {}
+func (UnimplementedMsgServiceServer) testEmbeddedByValue()                    {}
 
-// UnsafePersonServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to PersonServiceServer will
+// UnsafeMsgServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to MsgServiceServer will
 // result in compilation errors.
-type UnsafePersonServiceServer interface {
-	mustEmbedUnimplementedPersonServiceServer()
+type UnsafeMsgServiceServer interface {
+	mustEmbedUnimplementedMsgServiceServer()
 }
 
-func RegisterPersonServiceServer(s grpc.ServiceRegistrar, srv PersonServiceServer) {
-	// If the following call pancis, it indicates UnimplementedPersonServiceServer was
+func RegisterMsgServiceServer(s grpc.ServiceRegistrar, srv MsgServiceServer) {
+	// If the following call pancis, it indicates UnimplementedMsgServiceServer was
 	// embedded by pointer and is nil.  This will cause panics if an
 	// unimplemented method is ever invoked, so we test this at initialization
 	// time to prevent it from happening at runtime later due to I/O.
 	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
 		t.testEmbeddedByValue()
 	}
-	s.RegisterService(&PersonService_ServiceDesc, srv)
+	s.RegisterService(&MsgService_ServiceDesc, srv)
 }
 
-func _PersonService_Post_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _MsgService_Post_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Msg)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(PersonServiceServer).Post(ctx, in)
+		return srv.(MsgServiceServer).Post(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: PersonService_Post_FullMethodName,
+		FullMethod: MsgService_Post_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PersonServiceServer).Post(ctx, req.(*Msg))
+		return srv.(MsgServiceServer).Post(ctx, req.(*Msg))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// PersonService_ServiceDesc is the grpc.ServiceDesc for PersonService service.
+func _MsgService_Sub_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Tag)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServiceServer).Sub(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MsgService_Sub_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServiceServer).Sub(ctx, req.(*Tag))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// MsgService_ServiceDesc is the grpc.ServiceDesc for MsgService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var PersonService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "commns.PersonService",
-	HandlerType: (*PersonServiceServer)(nil),
+var MsgService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "commns.MsgService",
+	HandlerType: (*MsgServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "Post",
-			Handler:    _PersonService_Post_Handler,
+			Handler:    _MsgService_Post_Handler,
+		},
+		{
+			MethodName: "Sub",
+			Handler:    _MsgService_Sub_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "comms/comms.proto",
+	Metadata: "comms.proto",
 }

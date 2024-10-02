@@ -12,12 +12,12 @@ import (
 
 // Server is used to implement the gRPC PersonService server
 type Server struct {
-    commspb.UnimplementedPersonServiceServer
+    commspb.UnimplementedMsgServiceServer
 }
 
 func (s *Server) Post(ctx context.Context, msg *commspb.Msg) (*commspb.Ack, error) {
-    log.Printf("Client sent: %v", msg.Content)
-    message := fmt.Sprintf("Server recieved this from you: %v", msg.Content)
+    log.Printf("Client sent: %v, %v", msg.Content, msg.Tag)
+    message := fmt.Sprintf("Server recieved this from you: %v in tag: %v", msg.Content, msg.Tag)
     return &commspb.Ack{Message: message}, nil
 }
 
@@ -32,7 +32,7 @@ func main() {
     grpcServer := grpc.NewServer()
 
     // Register the PersonService server
-    commspb.RegisterPersonServiceServer(grpcServer, &Server{})
+    commspb.RegisterMsgServiceServer(grpcServer, &Server{})
 
     log.Println("gRPC server is running on port 50051...")
 

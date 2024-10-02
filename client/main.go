@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"fmt"
+	_ "fmt"
 	"log"
 	"math/rand"
 	"time"
@@ -12,27 +12,16 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-func createMsg() *commspb.Msg {
-    rand.Seed(time.Now().UnixMilli()) // deprecated, maybe remove it completly
-
-    subjects := []string{"The cat", "A dog", "My neighbor", "Tosia", "Gabi", "Staś"}
-	verbs := []string{"eats", "runs", "jumps", "sleeps", "talks", "cries"}
-	objects := []string{"pizza", "over the fence", "at the park", "with joy", "loudly", "like a pro"}
-
-    sentence := fmt.Sprintf("%s %s %s.", randomWord(subjects), randomWord(verbs), randomWord(objects))
-
+func createMsg(content string, tag *commspb.Tag) *commspb.Msg {
     msg := &commspb.Msg{
-		Content: sentence, 
+		Content: content, 
+        Tag: tag,
     }
     return msg
 }
 
-func randomWord(words []string) string {
-    return words[rand.Intn(len(words))]
-}
-
-func sendMsg(client commspb.PersonServiceClient, ctx context.Context) *commspb.Ack {
-    res, err := client.Post(ctx, createMsg())
+func sendMsg(client commspb.MsgServiceClient, ctx context.Context) *commspb.Ack {
+    res, err := client.Post(ctx, createMsg("test content", &commspb.Tag{Name: "test_tag"}))
     if err != nil {
         log.Fatalf("Error calling Post: %v", err)
     }
@@ -40,16 +29,16 @@ func sendMsg(client commspb.PersonServiceClient, ctx context.Context) *commspb.A
 }
 
 func main() {
-	// conn, err := grpc.NewClient("localhost:50051", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.NewClient("localhost:50051", grpc.WithTransportCredentials(insecure.NewCredentials()))
     // above if run locally and below if from docker-compose
-	conn, err := grpc.NewClient("server:50051", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	// conn, err := grpc.NewClient("server:50051", grpc.WithTransportCredentials(insecure.NewCredentials()))
 
     if err != nil {
         log.Fatalf("Failed to connect: %v", err)
     }
     defer conn.Close()
 
-    client := commspb.NewPersonServiceClient(conn)
+    client := commspb.NewMsgServiceClient(conn)
     ctx, cancel := context.WithTimeout(context.Background(), time.Hour)
     defer cancel()
 
