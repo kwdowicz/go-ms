@@ -12,16 +12,16 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-func createMsg(content string, tag *commspb.Tag) *commspb.Msg {
+func createMsg(content string, tag string) *commspb.Msg {
     msg := &commspb.Msg{
 		Content: content, 
-        Tag: tag,
+        Tag: &commspb.Tag{Name: tag},
     }
     return msg
 }
 
 func sendMsg(client commspb.MsgServiceClient, ctx context.Context) *commspb.Ack {
-    res, err := client.Post(ctx, createMsg("test content", &commspb.Tag{Name: "test_tag"}))
+    res, err := client.Post(ctx, createMsg("test content", "test tag")) 
     if err != nil {
         log.Fatalf("Error calling Post: %v", err)
     }
